@@ -1,97 +1,138 @@
-Disusun oleh:
-Kelompok 3
-Reynard Sebastian Hartono (C14230155)
-Juan Matthew Davidson (C14230124)
-Bryan Alexander Limanto (C14230114)
-Satrio Adi Rinekso (C14230112)
-Rui Krisna (C14230277)
-Dosen Pembimbing: Liliana, S.T., M.Eng., Ph.D.
+# Denoiser & Colorizer - U-Net Modification Study
 
-1. Latar Belakang Masalah
+> Comparative analysis of U-Net architectural modifications for image denoising and color restoration.
 
-Citra digital rentan terhadap degradasi kualitas, terutama dalam bentuk noise (fluktuasi acak akibat low-light atau keterbatasan sensor) dan degradasi warna (fading, color cast, atau saturasi tidak akurat). Degradasi ini mengurangi nilai informasi dan estetika.
+**Team 3 - Deep Learning Project**
 
-Metode restorasi tradisional seringkali mengorbankan detail (blurring) atau bersifat subjektif dan memakan waktu (restorasi manual). Oleh karena itu, diusulkan sebuah penelitian untuk melakukan analisis investigatif terhadap arsitektur U-Net. Penelitian ini bertujuan untuk menganalisis dampak modifikasi arsitektural U-Net secara sistematis untuk tugas Image Denoising dan Color Restoration secara simultan.2. Tujuan Proyek
-Mengembangkan Arsitektur Modifikasi: Mengimplementasikan varian U-Net yang menggabungkan Residual Connections, Attention Gates, dan Cross-Feedback terkontrol untuk image denoising dan color restoration terpadu.
-Analisis Komparatif: Membandingkan kinerja model yang diusulkan terhadap model baseline (U-Net standar) menggunakan metrik kuantitatif, yaitu Peak Signal-to-Noise Ratio (PSNR) dan Structural Similarity Index Measure (SSIM).
-Studi Ablasi: Menganalisis kontribusi masing-masing modul modifikasi (misalnya: efek penambahan Feature Pyramid Network (FPN) atau Depthwise Separable Convolution) terhadap efisiensi komputasi dan akurasi restorasi model. 3. Ruang Lingkup
+| Name                      | NIM       | Task                          | Status  |
+| ------------------------- | --------- | ----------------------------- | ------- |
+| Rui Krisna                | C14230277 | Feature Pyramid Network (FPN) | ✅ Done |
+| Bryan Alexander Limanto   | C14230114 | Residual Blocks               | ⬜ TODO |
+| Satrio Adi Rinekso        | C14230112 | Controlled Cross-Feedback     | ⬜ TODO |
+| Reynard Sebastian Hartono | C14230155 | Depthwise Separable Conv      | ⬜ TODO |
+| Juan Matthew Davidson     | C14230124 | Attention Gates               | ⬜ TODO |
 
-Proyek ini berfokus pada implementasi dan studi ablasi terhadap arsitektur U-Net yang dimodifikasi. Modifikasi yang dianalisis meliputi:
-Integrasi Residual Block (ResUnet) pada koneksi skip.
-Penggunaan mekanisme Attention Gate atau self-attention (Transformer-style) pada jalur fitur.
-Implementasi mekanisme Cross-Feedback terkontrol antara decoder Denoising dan Colorization.
-Eksplorasi Multi-Scale Feature Fusion (mirip FPN) untuk pemulihan detail.
-Penerapan Depthwise Separable Convolution untuk efisiensi model. 4. Arsitektur Model yang Diusulkan
-Base: Arsitektur Encoder tunggal dengan Dual Decoder (satu untuk denoise grayscale, satu untuk colorizer RGB) dan Dual Discriminator (grayscale PatchGAN dan color PatchGAN).
-Tipe Tugas: Ini adalah tugas Regresi (Regression), bukan klasifikasi, karena model memprediksi nilai piksel (warna dan kecerahan) secara kontinu.
-Modifikasi Arsitektur (Prioritas Implementasi)
-No.
-Modifikasi
-Detail Implementasi
-Kelebihan & Tujuan
-1
-Residual Blocks
-Mengganti Plain U-Net block dengan Residual Blocks (ResUnet). Menggunakan pre-activation dan 1x1 projection pada shortcut jika terdapat perbedaan jumlah channel.
-Memperbaiki aliran gradient (gradient flow) dan menstabilkan proses pelatihan, terutama pada model GAN.
-2
-Attention Gates
-Implementasi Attention Gate pada setiap koneksi skip (gating dari fitur decoder ke encoder). Opsional: penambahan self-attention multi-head pada resolusi fitur 1/8 untuk konteks global.
-Memungkinkan model untuk berfokus pada bagian input yang paling relevan (meningkatkan global consistency), yang dapat menghemat sumber daya komputasi.
-3
-Cross-Feedback Terkontrol
-Injeksi fitur warna dari colorizer (dengan stop gradient/detached) ke jalur denoiser melalui gate (kombinasi 1x1 conv + 3x3 conv).
-Fitur warna membantu penyempurnaan detail pada gambar grayscale yang telah di-denoise, menghasilkan pinggiran lebih tajam dan mengurangi color bleeding artifact. Harus berhati-hati dalam siklus feedback agar tidak terjadi kebocoran fitur yang merusak.
-4
-Feature Pyramid Network (FPN)
-Multi-scale feature fusion pada 2-3 level resolusi, menggunakan lateral 1x1 conv (64–128 channel) diikuti upsample, concat, dan 3x3 fuse.
-Meningkatkan pemulihan detail, terutama pada scene dengan noise tinggi atau objek besar.
-5
-Depthwise Separable Convolution
-Diterapkan secara parsial, hanya pada blok di bagian tengah jaringan (mid-network). Lapisan down-sampling dan up-sampling awal/akhir tetap menggunakan convolution biasa.
-Membuat model lebih lightweight dan efisien secara komputasi.
+**Advisor:** Liliana, S.T., M.Eng., Ph.D.
 
-5. Dataset dan Pra-pemrosesan
-   Kategori
-   Deskripsi
-   Dataset Utama
-   COCO (Common Objects in Context) sebagai sumber data utama karena variasi scene yang luas.
-   Dataset Alternatif
-   KITTI (untuk raw color frames), BSD68/DIV2K (untuk sanity check tugas denoising).
-   Target Ground Truth (GT)
-   Target RGB: Citra asli berwarna (Raw Frames). Target Grayscale: Konversi citra asli ke grayscale menggunakan standar luminance conversion.
-   Input Model
-   Citra grayscale yang telah ditambahkan noise sintetik (menggunakan distribusi Gaussian Uniform U(5,50) per gambar).
+---
 
-6. Metodologi Penelitian
-   Studi Literatur: Mempelajari secara mendalam arsitektur U-Net, Residual Learning, mekanisme Attention, dan Generative Adversarial Networks (GAN) untuk restorasi citra.
-   Pengumpulan Data: Mengakuisisi dan memverifikasi dataset citra standar yang akan digunakan untuk pelatihan dan pengujian.
-   Pra-pemrosesan Data: Penyesuaian format data, konversi warna, dan pembangkitan noise sintetik yang seragam untuk pelatihan.
-   Perancangan Arsitektur: Implementasi model modifikasi U-Net dengan Dual Decoder dan mekanisme Cross-Feedback yang telah ditentukan.
-   Pelatihan Model (Training): Melatih model menggunakan Loss Function gabungan yang disesuaikan untuk tugas dual-task (denoising dan colorization).
-   Evaluasi dan Analisis: Menguji performa model menggunakan metrik kuantitatif (PSNR/SSIM) dan menjalankan studi ablasi untuk menilai kontribusi setiap modul modifikasi.
-7. Pembagian Tugas
-   Nama Anggota
-   NIM
-   Tugas yang Diambil
-   Rui Krisna
-   C14230277
-   Feature Pyramid Network
-   Bryan Alexander Limanto
-   C14230114
-   Residual Blocks
-   Satrio Adi Rinekso
-   C14230112
-   Controlled Cross Feedback
-   Reynard Sebastian Hartono
-   C14230155
-   Depthwise Separable Convolution
-   Juan Matthew Davidson
-   C14230124
-   Attention Gates
+## 📦 Resources
 
-Referensi
-COCO dataset: torchvision.datasets.CocoDetection
-Denoizer: DPIR
-Colorizer: DDColor
-GAN (pix2pix): SMA-2020 paper 39
-Sisa paper untuk colorizer (Perlu ditambahkan link spesifik jika sudah ditemukan)
+- **Code:** [GitHub Repository](https://github.com/Asep-Ireng/denoiser_colorizer)
+- **Weights:** [Hugging Face Models](https://huggingface.co/Asep-Ireng/Denoiser_Colorizer)
+- **Dataset:** COCO Animals (15,000 images filtered from COCO 2017)
+
+---
+
+## 🚀 Quick Start
+
+### 1. Clone Repository
+
+```bash
+git clone https://github.com/Asep-Ireng/denoiser_colorizer.git
+cd denoiser_colorizer
+```
+
+### 2. Download Weights
+
+```bash
+pip install huggingface_hub
+huggingface-cli download Asep-Ireng/Denoiser_Colorizer --local-dir weights/
+```
+
+### 3. Install Dependencies
+
+```bash
+pip install torch torchvision gradio numpy pillow tqdm timm
+```
+
+### 4. Run Gradio App
+
+```bash
+python app.py
+```
+
+---
+
+## 📊 Results
+
+### FPN Modification (by Rui Krisna)
+
+| Model             | σ=15      | σ=25      | σ=50      | Average   |
+| ----------------- | --------- | --------- | --------- | --------- |
+| Baseline (DRUNet) | 32.80     | 30.07     | 25.92     | 29.60     |
+| FPN Arch-Only     | 19.47     | 18.96     | 17.77     | 18.73     |
+| **FPN Trained**   | **32.99** | **30.56** | **27.45** | **30.33** |
+
+**Key Finding:** FPN-enhanced denoiser achieves **+0.73 dB PSNR improvement** over baseline, with best gains at high noise (+1.53 dB at σ=50).
+
+---
+
+## 🏗️ Architecture
+
+### Base Model
+
+- **Denoiser:** DRUNet (UNetRes) - grayscale denoising
+- **Colorizer:** DDColor - transformer-based colorization
+
+### Modifications Being Studied
+
+1. **Residual Blocks** - Improve gradient flow
+2. **Attention Gates** - Focus on relevant regions
+3. **Cross-Feedback** - Share features between denoiser/colorizer
+4. **Feature Pyramid Network (FPN)** ✅ - Multi-scale feature fusion
+5. **Depthwise Separable Conv** - Reduce parameters
+
+---
+
+## 📁 Project Structure
+
+```
+denoiser_colorizer/
+├── app.py                  # Gradio UI
+├── train_fpn.py            # FPN training script
+├── evaluate.py             # PSNR evaluation
+├── models/
+│   ├── denoiser/           # Baseline DRUNet
+│   ├── colorizer/          # DDColor
+│   └── modified/           # FPN-enhanced UNet
+├── weights/                # Model weights (download from HF)
+└── utils/                  # Dataset utilities
+```
+
+---
+
+## 👥 Team Checklist
+
+### For Each Modification:
+
+- [ ] **Create model file** in `models/modified/`
+- [ ] **Add training script** (e.g., `train_xxx.py`)
+- [ ] **Run evaluation** using `evaluate.py`
+- [ ] **Update this README** with results table
+- [ ] **Commit and push** to GitHub
+- [ ] **Upload weights** to Hugging Face
+
+### How to Add Your Modification:
+
+1. Copy baseline model to `models/modified/`
+2. Implement your modification
+3. Train using your training script
+4. Run `python evaluate.py --num_images 100`
+5. Add your results to this README
+6. Push code and weights
+
+---
+
+## 📄 References
+
+- **DRUNet:** [DPIR Paper](https://github.com/cszn/DPIR)
+- **DDColor:** [DDColor Paper](https://github.com/piddnad/DDColor)
+- **COCO Dataset:** [COCO 2017](https://cocodataset.org/)
+- **FPN:** [Feature Pyramid Networks for Object Detection](https://arxiv.org/abs/1612.03144)
+
+---
+
+## 📝 License
+
+MIT License
