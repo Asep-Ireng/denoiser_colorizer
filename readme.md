@@ -68,6 +68,23 @@ python app.py
 
 ---
 
+### DSC Modification (by Reynard Sebastian Hartono)
+
+Base Params: 32,638,656
+DSC Params : 4,952,768
+Reduction  : 84.83%
+Base Inference: 236.17 ms
+DSC Inference : 68.73 ms
+
+============================================================
+Model           | sigma=15   | sigma=25   | sigma=50   | Average
+------------------------------------------------------------
+Baseline        | 32.55 | 29.85 | 25.80 | 29.40
+DSC             | 31.88 | 29.47 | 26.46 | 29.27
+============================================================
+
+**Key Finding:** The DSC version of the denoiser achieves less PNSR score (with the average being -0.13 dB PSNR reduction). This is expected considering the reduction of parameters (which in turn causes less inference time), which causes this reduction to be insignificant and can be considered as a worthwile trade-off.
+
 ## 🏗️ Architecture
 
 ### Base Model
