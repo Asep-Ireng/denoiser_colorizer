@@ -10,11 +10,11 @@
 
 ### Objective
 
-Integrate Feature Pyramid Network (FPN) into the DRUNet denoiser to improve detail preservation through multi-scale feature fusion.
+Integrate Feature Pyramid Network (FPN) into the UNet denoiser to improve detail preservation through multi-scale feature fusion.
 
 ### Motivation
 
-The baseline DRUNet uses simple skip connections that add encoder features directly to decoder features. This can lead to:
+The baseline UNet uses simple skip connections that add encoder features directly to decoder features. This can lead to:
 
 - Loss of fine details during upsampling
 - Insufficient multi-scale context integration
