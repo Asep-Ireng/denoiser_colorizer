@@ -70,11 +70,11 @@ python app.py
 
 ### DSC Modification (by Reynard Sebastian Hartono)
 
-Base Params: 32,638,656
-DSC Params : 4,952,768
-Reduction  : 84.83%
-Base Inference: 236.17 ms
-DSC Inference : 68.73 ms
+* Base Params: 32,638,656
+* DSC Params : 4,952,768
+* Parameters Reduction  : 84.83%
+* Base Inference: 236.17 ms
+* DSC Inference : 68.73 ms
 
 | Model             | σ=15      | σ=25      | σ=50      | Average   |
 | ----------------- | --------- | --------- | --------- | --------- |
