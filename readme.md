@@ -7,9 +7,9 @@
 | Name                      | NIM       | Task                          | Status  |
 | ------------------------- | --------- | ----------------------------- | ------- |
 | Rui Krisna                | C14230277 | Feature Pyramid Network (FPN) | ✅ Done |
-| Bryan Alexander Limanto   | C14230114 | Residual Blocks               | ⬜ TODO |
+| Bryan Alexander Limanto   | C14230114 | Residual Blocks               | ✅ Done |
 | Satrio Adi Rinekso        | C14230112 | Controlled Cross-Feedback     | ⬜ TODO |
-| Reynard Sebastian Hartono | C14230155 | Depthwise Separable Conv      | ⬜ TODO |
+| Reynard Sebastian Hartono | C14230155 | Depthwise Separable Conv      | ✅ Done |
 | Juan Matthew Davidson     | C14230124 | Attention Gates               | ⬜ TODO |
 
 **Advisor:** Liliana, S.T., M.Eng., Ph.D.
@@ -66,7 +66,6 @@ python app.py
 
 **Key Finding:** FPN-enhanced denoiser achieves **+0.73 dB PSNR improvement** over baseline, with best gains at high noise (+1.53 dB at σ=50).
 
----
 
 ### DSC Modification (by Reynard Sebastian Hartono)
 
