@@ -80,7 +80,7 @@ def forward(self, x0):
 
     # Decoder with FPN-enhanced skips
     x = self.m_up3(x + x4)
-    x = self.m_up2(x + x3) + 0.6 * p2   # Blend FPN features
+    x = self.m_up2(x + x3) + 1.0 * p2   # Blend FPN features
     x = self.m_up1(x + x2) + 0.6 * p1
     x = self.m_tail(x + x1)
 
