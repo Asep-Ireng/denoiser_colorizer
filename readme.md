@@ -80,7 +80,6 @@ python app.py
 | ----------------- | --------- | --------- | --------- | --------- |
 | Baseline          | 32.55     | 29.85     | 25.80     | 29.40     |
 | DSC               | 31.88     | 29.47     | 26.46     | 29.27     |
-| **FPN Trained**   | **32.99** | **30.56** | **27.45** | **30.33** |
 
 **Key Finding:** The DSC version of the denoiser achieves less PNSR score (with the average being -0.13 dB PSNR reduction). This is expected considering the reduction of parameters (which in turn causes less inference time), which causes this reduction to be insignificant and can be considered as a worthwile trade-off.
 
