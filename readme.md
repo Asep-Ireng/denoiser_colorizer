@@ -106,7 +106,7 @@ Inference Speed: 946.49 ms ms Tested on CPU
 | Baseline          | 15.03      |  14.35     | 12.35      | 13.87      |
 | Controled Cross-Field               | 23.46     | 23.43     | 16.39     | 21.09     |
 
-**Key Finding:** the Controlled Cross-Field Feedback mechanism ensures that semantic information from the colorization task aids the denoising process. The model maintains high structural fidelity even at high noise levels ($\sigma=50$), with an inference time of 946.49 ms, making it a viable solution for practical image restoration systems.
+**Key Finding:** The Controlled Cross-Field Feedback mechanism implements a dual-task architecture that simultaneously performs image denoising and colorization, a far more complex challenge than the single-task methods used in other modifications. By utilizing semantic information from the colorization task to guide the denoising process, the model achieves a significant average improvement of 21.09 dB (+7.22 dB gain) over the baseline. 
 
 ## 🏗️ Architecture
 
