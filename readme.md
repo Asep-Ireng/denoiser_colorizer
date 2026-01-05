@@ -67,6 +67,18 @@ python app.py
 **Key Finding:** FPN-enhanced denoiser achieves **+0.73 dB PSNR improvement** over baseline, with best gains at high noise (+1.53 dB at σ=50).
 
 
+### Residual Blocks Modification (by Bryan Alexander Limanto)
+
+
+| Model Name        |  σ=15  |  σ=25  |  σ=50  | Average   |
+| ----------------- | -------| -------| -------| --------- |
+| Plain U-Net       | 30.31  | 28.06  | 24.91  | 27.76     |
+| Residual U-Net    | 31.62  | 29.18  | 26.11  | 28.97     |
+| DRUNet (Baseline) | 31.86  | 29.16  | 25.12  | 28.71 	   |
+
+**Key Finding:** The Residual U-Net outperforms the DRUNet baseline with **a +0.26 dB average improvement**. Most notably, it demonstrates superior robustness at high noise levels, achieving a significant **+0.99 dB gain at σ=50** compared to the baseline.
+
+
 ### DSC Modification (by Reynard Sebastian Hartono)
 
 * Base Params: 32,638,656
