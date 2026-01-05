@@ -95,7 +95,7 @@ python app.py
 **Key Finding:** The DSC version of the denoiser achieves less PNSR score (with the average being -0.13 dB PSNR reduction). This is expected considering the reduction of parameters (which in turn causes less inference time), which causes this reduction to be insignificant and can be considered as a worthwile trade-off.
 
 
-###Cross-Field Feedback Modification (by Satrio Adi Rinekso)
+###Controled Cross-Field Feedback Modification (by Satrio Adi Rinekso)
 
 Total Parameters:  16,390,404
 
@@ -104,7 +104,7 @@ Inference Speed: 946.49 ms ms Tested on CPU
 | Model             | σ=15      | σ=25      | σ=50      | Average   |
 | ----------------- | --------- | --------- | --------- | --------- |
 | Baseline          | 8.37      |  8.37     | 8.37      | 8.37      |
-| DSC               | 28.02     | 27.95     | 18.16     | 24.47     |
+| Controled Cross-Field               | 28.02     | 27.95     | 18.16     | 24.47     |
 
 **Key Finding:** the Controlled Cross-Field Feedback mechanism ensures that semantic information from the colorization task aids the denoising process. The model maintains high structural fidelity even at high noise levels ($\sigma=50$), with an inference time of 946.49 ms, making it a viable solution for practical image restoration systems.
 
