@@ -8,7 +8,7 @@
 | ------------------------- | --------- | ----------------------------- | ------- |
 | Rui Krisna                | C14230277 | Feature Pyramid Network (FPN) | ✅ Done |
 | Bryan Alexander Limanto   | C14230114 | Residual Blocks               | ✅ Done |
-| Satrio Adi Rinekso        | C14230112 | Controlled Cross-Feedback     | ⬜ TODO |
+| Satrio Adi Rinekso        | C14230112 | Controlled Cross-Feedback     | ✅ TODO |
 | Reynard Sebastian Hartono | C14230155 | Depthwise Separable Conv      | ✅ Done |
 | Juan Matthew Davidson     | C14230124 | Attention Gates               | ⬜ TODO |
 
@@ -93,6 +93,20 @@ python app.py
 | DSC               | 31.88     | 29.47     | 26.46     | 29.27     |
 
 **Key Finding:** The DSC version of the denoiser achieves less PNSR score (with the average being -0.13 dB PSNR reduction). This is expected considering the reduction of parameters (which in turn causes less inference time), which causes this reduction to be insignificant and can be considered as a worthwile trade-off.
+
+
+###Cross-Field Feedback Modification (by Satrio Adi Rinekso)
+
+Total Parameters:  16,390,404
+
+Inference Speed: 946.49 ms ms Tested on CPU
+
+| Model             | σ=15      | σ=25      | σ=50      | Average   |
+| ----------------- | --------- | --------- | --------- | --------- |
+| Baseline          | 8.37      |  8.37     | 8.37      | 8.37      |
+| DSC               | 28.02     | 27.95     | 18.16     | 24.47     |
+
+**Key Finding:** the Controlled Cross-Field Feedback mechanism ensures that semantic information from the colorization task aids the denoising process. The model maintains high structural fidelity even at high noise levels ($\sigma=50$), with an inference time of 946.49 ms, making it a viable solution for practical image restoration systems.
 
 ## 🏗️ Architecture
 
