@@ -50,21 +50,24 @@ def load_models():
     baseline.to(DEVICE).eval()
     models['Baseline'] = baseline
     
-      # DSC Model
-
-    print("Loading DSC Model...")
-
-    dsc_model = UNetResDSC(in_nc=2, out_nc=1, nc=[64, 128, 256, 512], nb=4, act_mode='R')
-
-    dsc_weights = PROJECT_ROOT / 'weights' / 'dsc' / 'dsc_best.pth'
-
-    if dsc_weights.exists():
-
-        dsc_model.load_state_dict(torch.load(dsc_weights, map_location=DEVICE, weights_only=True))
-
-    dsc_model.to(DEVICE).eval()
-
-    models['DSC'] = dsc_model
+    # DSC Models for different epochs
+    epochs = [5, 10, 15, 20, 'best']
+    for epoch in epochs:
+        print(f"Loading DSC Model - Epoch {epoch}...")
+        dsc_model = UNetResDSC(in_nc=2, out_nc=1, nc=[64, 128, 256, 512], nb=4, act_mode='R')
+        
+        if epoch == 'best':
+            weights_file = 'dsc_best.pth'
+            name = 'DSC_Best'
+        else:
+            weights_file = f'dsc_epoch_{epoch}.pth'
+            name = f'DSC_Epoch{epoch}'
+        
+        dsc_weights = PROJECT_ROOT / 'weights' / 'dsc' / weights_file
+        if dsc_weights.exists():
+            dsc_model.load_state_dict(torch.load(dsc_weights, map_location=DEVICE, weights_only=True))
+        dsc_model.to(DEVICE).eval()
+        models[name] = dsc_model
 
     return models
 
