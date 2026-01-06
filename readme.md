@@ -8,7 +8,7 @@
 | ------------------------- | --------- | ----------------------------- | ------- |
 | Rui Krisna                | C14230277 | Feature Pyramid Network (FPN) | ✅ Done |
 | Bryan Alexander Limanto   | C14230114 | Residual Blocks               | ✅ Done |
-| Satrio Adi Rinekso        | C14230112 | Controlled Cross-Feedback     | ✅ TODO |
+| Satrio Adi Rinekso        | C14230112 | Controlled Cross-Feedback     | ✅ Done |
 | Reynard Sebastian Hartono | C14230155 | Depthwise Separable Conv      | ✅ Done |
 | Juan Matthew Davidson     | C14230124 | Attention Gates               | ⬜ TODO |
 
