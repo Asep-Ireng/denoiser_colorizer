@@ -96,8 +96,8 @@ python app.py
 |DSC_Epoch20        | 31.74     | 29.33     | 26.29     | 29.12     |
 | **DSC_Best**      | 31.61     | 29.20     | 26.18     | **29.00** |
 
-**Key Finding:** 
-* The DSC version of the denoiser achieves less PNSR score (with the average being -0.13 dB PSNR reduction). This is expected considering the reduction of parameters (which in turn causes less inference time), which causes this reduction to be insignificant and can be considered as a worthwile trade-off.
+**Key Findings:** 
+* The DSC version of the denoiser achieves less PNSR score (with the average being -0.16 dB PSNR reduction in this evaluation). This is expected considering the reduction of parameters (which in turn causes less inference time), which causes this reduction to be insignificant and can be considered as a worthwile trade-off.
 * With a high noise input (specifically at level σ=50), the DSC version appears to be winning in terms of PSNR score in every epoch checkpoint. This interesting finding may be caused by the reduction of parameters, which in turn reduces the risk of overfitting and acting as a regularization step. These conditions caused the DSC model to produce a smoother reconstruction of high-noise images.
 
 ###  Controlled Cross-Field Feedback Modification (by Satrio Adi Rinekso)
