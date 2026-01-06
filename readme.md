@@ -95,7 +95,7 @@ python app.py
 **Key Finding:** The DSC version of the denoiser achieves less PNSR score (with the average being -0.13 dB PSNR reduction). This is expected considering the reduction of parameters (which in turn causes less inference time), which causes this reduction to be insignificant and can be considered as a worthwile trade-off.
 
 
-###Controled Cross-Field Feedback Modification (by Satrio Adi Rinekso)
+###  Controled Cross-Field Feedback Modification (by Satrio Adi Rinekso)
 
 Total Parameters:  16,390,404
 
