@@ -89,8 +89,12 @@ python app.py
 
 | Model             | σ=15      | σ=25      | σ=50      | Average   |
 | ----------------- | --------- | --------- | --------- | --------- |
-| Baseline          | 32.55     | 29.85     | 25.80     | 29.40     |
-| DSC               | 31.88     | 29.47     | 26.46     | 29.27     |
+| **Baseline**      | 32.26     | 29.60     | 25.62     | **29.16** |
+|DSC_Epoch5         | 31.35     | 28.98     | 26.01     | 28.78     |
+|DSC_Epoch10        | 31.64     | 29.23     | 26.19     | 29.02     |
+|DSC_Epoch15        | 31.70     | 29.29     | 26.26     | 29.08     |
+|DSC_Epoch20        | 31.74     | 29.33     | 26.29     | 29.12     |
+| **DSC_Best**      | 31.61     | 29.20     | 26.18     | **29.00** |
 
 **Key Finding:** The DSC version of the denoiser achieves less PNSR score (with the average being -0.13 dB PSNR reduction). This is expected considering the reduction of parameters (which in turn causes less inference time), which causes this reduction to be insignificant and can be considered as a worthwile trade-off.
 
