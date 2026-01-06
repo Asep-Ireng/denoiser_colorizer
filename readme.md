@@ -117,11 +117,11 @@ Inference Speed: 946.49 ms ms Tested on CPU
 
 ### Modifications Being Studied
 
-1. **Residual Blocks** - Improve gradient flow
+1. **Residual Blocks**  ✅ - Improve gradient flow
 2. **Attention Gates** - Focus on relevant regions
-3. **Cross-Feedback** - Share features between denoiser/colorizer
+3. **Cross-Feedback**  ✅ - Share features between denoiser/colorizer
 4. **Feature Pyramid Network (FPN)** ✅ - Multi-scale feature fusion
-5. **Depthwise Separable Conv** - Reduce parameters
+5. **Depthwise Separable Conv**  ✅ - Reduce parameters
 
 ---
 
