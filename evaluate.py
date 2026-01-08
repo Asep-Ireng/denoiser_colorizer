@@ -16,6 +16,8 @@ import torch.nn.functional as F
 import numpy as np
 from PIL import Image
 from tqdm import tqdm
+import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 
 # Add project paths
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -98,7 +100,7 @@ def denoise_image(model, noisy, noise_level):
     return np.clip(result, 0, 1)
 
 
-def evaluate(test_dir, models, num_images=100, noise_levels=[15, 25, 50]):
+def evaluate(test_dir, models, num_images=100, noise_levels=[15, 25, 50, 75]):
     """Evaluate all models on test images."""
     
     # Get image paths
@@ -143,7 +145,7 @@ def print_results(results, noise_levels):
     # Header
     header = f"{'Model':<15}"
     for nl in noise_levels:
-        header += f" | σ={nl:<4}"
+        header += f" | σ={nl:<5}"
     header += " | Average"
     print(header)
     print("-"*60)
@@ -162,12 +164,85 @@ def print_results(results, noise_levels):
     print("="*60)
 
 
+def generate_error_heatmaps(test_dir, models, noise_levels, output_dir='evaluation_results'):
+    """Generate error heatmaps for visual comparison."""
+    output_path = Path(output_dir)
+    output_path.mkdir(exist_ok=True)
+    
+    # Get a sample image
+    image_paths = list(Path(test_dir).glob('*.jpg'))
+    if not image_paths:
+        print("No images found for heatmap generation")
+        return
+    
+    sample_path = random.choice(image_paths)
+    img = Image.open(sample_path).convert('L')
+    
+    # Resize to consistent size
+    img = img.resize((256, 256), Image.BILINEAR)
+    clean = np.array(img).astype(np.float32) / 255.0
+    
+    # Filter out FPN_Arch for visualization (poor performance)
+    vis_models = {k: v for k, v in models.items() if k != 'FPN_Arch'}
+    model_names = list(vis_models.keys())
+    
+    # Create figure: rows = noise levels, cols = models
+    fig, axes = plt.subplots(len(noise_levels), len(model_names) + 2, 
+                              figsize=(4 * (len(model_names) + 2), 4 * len(noise_levels)))
+    
+    if len(noise_levels) == 1:
+        axes = axes.reshape(1, -1)
+    
+    for row_idx, noise_level in enumerate(noise_levels):
+        # Add noise
+        np.random.seed(42)  # Consistent noise for comparison
+        sigma = noise_level / 255.0
+        noise = np.random.randn(*clean.shape).astype(np.float32) * sigma
+        noisy = np.clip(clean + noise, 0, 1)
+        
+        # Column 0: Noisy image
+        axes[row_idx, 0].imshow(noisy, cmap='gray', vmin=0, vmax=1)
+        axes[row_idx, 0].set_title(f'Noisy (σ={noise_level})', fontsize=12, fontweight='bold')
+        axes[row_idx, 0].axis('off')
+        
+        # Column 1: Clean image
+        axes[row_idx, 1].imshow(clean, cmap='gray', vmin=0, vmax=1)
+        axes[row_idx, 1].set_title('Clean', fontsize=12, fontweight='bold')
+        axes[row_idx, 1].axis('off')
+        
+        # Error heatmaps for each model
+        for col_idx, (name, model) in enumerate(vis_models.items()):
+            denoised = denoise_image(model, noisy, noise_level)
+            error = np.abs(denoised - clean)
+            psnr = compute_psnr(denoised, clean)
+            
+            im = axes[row_idx, col_idx + 2].imshow(error, cmap='magma', vmin=0, vmax=0.15)
+            axes[row_idx, col_idx + 2].set_title(f'{name} Error\nPSNR: {psnr:.2f} dB', 
+                                                  fontsize=11, fontweight='bold')
+            axes[row_idx, col_idx + 2].axis('off')
+    
+    # Add colorbar
+    cbar_ax = fig.add_axes([0.92, 0.15, 0.02, 0.7])
+    cbar = fig.colorbar(im, cax=cbar_ax)
+    cbar.set_label('Absolute Error', fontsize=12)
+    
+    plt.suptitle('Error Heatmaps: Lower (darker) is Better', fontsize=14, fontweight='bold', y=0.98)
+    plt.tight_layout(rect=[0, 0, 0.9, 0.96])
+    
+    save_path = output_path / 'error_heatmaps.png'
+    plt.savefig(save_path, dpi=150, bbox_inches='tight', facecolor='white')
+    plt.close()
+    
+    print(f"\nError heatmaps saved to: {save_path}")
+
+
 def main():
     parser = argparse.ArgumentParser(description='Evaluate denoiser models')
     parser.add_argument('--test_dir', type=str, default='data_filtered/test',
                         help='Directory with test images')
     parser.add_argument('--num_images', type=int, default=100)
-    parser.add_argument('--noise_levels', type=int, nargs='+', default=[15, 25, 50])
+    parser.add_argument('--noise_levels', type=int, nargs='+', default=[15, 25, 50, 75])
+    parser.add_argument('--heatmap', action='store_true', help='Generate error heatmaps')
     args = parser.parse_args()
     
     print(f"Using device: {DEVICE}")
@@ -180,6 +255,11 @@ def main():
     
     # Print results
     print_results(results, args.noise_levels)
+    
+    # Generate heatmaps if requested
+    if args.heatmap:
+        print("\nGenerating error heatmaps...")
+        generate_error_heatmaps(args.test_dir, models, args.noise_levels)
 
 
 if __name__ == '__main__':

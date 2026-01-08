@@ -25,6 +25,7 @@ from torch.optim.lr_scheduler import CosineAnnealingLR
 import numpy as np
 from PIL import Image
 from tqdm import tqdm
+import matplotlib.pyplot as plt
 
 # Add project paths
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -262,6 +263,14 @@ def main():
     
     best_psnr = 0
     
+    # History for plotting
+    history = {
+        'phase1_train_loss': [], 'phase1_train_psnr': [],
+        'phase1_val_loss': [], 'phase1_val_psnr': [],
+        'phase2_train_loss': [], 'phase2_train_psnr': [],
+        'phase2_val_loss': [], 'phase2_val_psnr': []
+    }
+    
     for epoch in range(1, args.epochs_phase1 + 1):
         print(f"\nEpoch {epoch}/{args.epochs_phase1}")
         
@@ -271,6 +280,11 @@ def main():
         
         print(f"  Train Loss: {train_loss:.4f}, PSNR: {train_psnr:.2f}")
         print(f"  Val Loss: {val_loss:.4f}, PSNR: {val_psnr:.2f}")
+        
+        history['phase1_train_loss'].append(train_loss)
+        history['phase1_train_psnr'].append(train_psnr)
+        history['phase1_val_loss'].append(val_loss)
+        history['phase1_val_psnr'].append(val_psnr)
         
         if val_psnr > best_psnr:
             best_psnr = val_psnr
@@ -295,6 +309,11 @@ def main():
         print(f"  Train Loss: {train_loss:.4f}, PSNR: {train_psnr:.2f}")
         print(f"  Val Loss: {val_loss:.4f}, PSNR: {val_psnr:.2f}")
         
+        history['phase2_train_loss'].append(train_loss)
+        history['phase2_train_psnr'].append(train_psnr)
+        history['phase2_val_loss'].append(val_loss)
+        history['phase2_val_psnr'].append(val_psnr)
+        
         if val_psnr > best_psnr:
             best_psnr = val_psnr
             torch.save(model.state_dict(), os.path.join(args.output_dir, 'fpn_best.pth'))
@@ -313,6 +332,49 @@ def main():
     print(f"Training complete! Best PSNR: {best_psnr:.2f}")
     print(f"Model saved to: {args.output_dir}/fpn_best.pth")
     print("="*50)
+    
+    # --- Save Training Plot ---
+    print("\n📈 Saving Training Plot...")
+    fig, axes = plt.subplots(2, 2, figsize=(12, 8))
+    
+    # Phase 1 Loss
+    axes[0, 0].plot(history['phase1_train_loss'], 'b-o', label='Train')
+    axes[0, 0].plot(history['phase1_val_loss'], 'r--s', label='Val')
+    axes[0, 0].set_title('Phase 1: Loss')
+    axes[0, 0].set_xlabel('Epoch')
+    axes[0, 0].legend()
+    axes[0, 0].grid(True)
+    
+    # Phase 1 PSNR
+    axes[0, 1].plot(history['phase1_train_psnr'], 'b-o', label='Train')
+    axes[0, 1].plot(history['phase1_val_psnr'], 'r--s', label='Val')
+    axes[0, 1].set_title('Phase 1: PSNR (dB)')
+    axes[0, 1].set_xlabel('Epoch')
+    axes[0, 1].legend()
+    axes[0, 1].grid(True)
+    
+    # Phase 2 Loss
+    axes[1, 0].plot(history['phase2_train_loss'], 'b-o', label='Train')
+    axes[1, 0].plot(history['phase2_val_loss'], 'r--s', label='Val')
+    axes[1, 0].set_title('Phase 2: Loss')
+    axes[1, 0].set_xlabel('Epoch')
+    axes[1, 0].legend()
+    axes[1, 0].grid(True)
+    
+    # Phase 2 PSNR
+    axes[1, 1].plot(history['phase2_train_psnr'], 'b-o', label='Train')
+    axes[1, 1].plot(history['phase2_val_psnr'], 'r--s', label='Val')
+    axes[1, 1].set_title('Phase 2: PSNR (dB)')
+    axes[1, 1].set_xlabel('Epoch')
+    axes[1, 1].legend()
+    axes[1, 1].grid(True)
+    
+    plt.suptitle('FPN Training Progress', fontsize=14)
+    plt.tight_layout()
+    
+    plot_path = os.path.join(args.output_dir, 'training_plot.png')
+    plt.savefig(plot_path, dpi=150)
+    print(f"✅ Plot saved: {plot_path}")
 
 
 if __name__ == '__main__':
