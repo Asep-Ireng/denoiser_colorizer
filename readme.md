@@ -7,9 +7,9 @@
 | Name                      | NIM       | Task                          | Status  |
 | ------------------------- | --------- | ----------------------------- | ------- |
 | Rui Krisna                | C14230277 | Feature Pyramid Network (FPN) | ✅ Done |
-| Bryan Alexander Limanto   | C14230114 | Residual Blocks               | ⬜ TODO |
-| Satrio Adi Rinekso        | C14230112 | Controlled Cross-Feedback     | ⬜ TODO |
-| Reynard Sebastian Hartono | C14230155 | Depthwise Separable Conv      | ⬜ TODO |
+| Bryan Alexander Limanto   | C14230114 | Residual Blocks               | ✅ Done |
+| Satrio Adi Rinekso        | C14230112 | Controlled Cross-Feedback     | ✅ Done |
+| Reynard Sebastian Hartono | C14230155 | Depthwise Separable Conv      | ✅ Done |
 | Juan Matthew Davidson     | C14230124 | Attention Gates               | ⬜ TODO |
 
 **Advisor:** Liliana, S.T., M.Eng., Ph.D.
@@ -66,7 +66,73 @@ python app.py
 
 **Key Finding:** FPN-enhanced denoiser achieves **+0.73 dB PSNR improvement** over baseline, with best gains at high noise (+1.53 dB at σ=50).
 
+### Residual Blocks Modification (by Bryan Alexander Limanto)
+
+| Model Name        | σ=15  | σ=25  | σ=50  | Average |
+| ----------------- | ----- | ----- | ----- | ------- |
+| Plain U-Net       | 30.31 | 28.06 | 24.91 | 27.76   |
+| Residual U-Net    | 31.62 | 29.18 | 26.11 | 28.97   |
+| DRUNet (Baseline) | 31.86 | 29.16 | 25.12 | 28.71   |
+
+**Key Finding:** The Residual U-Net outperforms the DRUNet baseline with **a +0.26 dB average improvement**. Most notably, it demonstrates superior robustness at high noise levels, achieving a significant **+0.99 dB gain at σ=50** compared to the baseline.
+
+### DSC Modification (by Reynard Sebastian Hartono)
+
+- Base Params: 32,638,656
+- DSC Params : 4,952,768
+- Parameters Reduction : 84.83%
+- Base Inference: 236.17 ms
+- DSC Inference : 68.73 ms
+
+| Model        | σ=15  | σ=25  | σ=50  | Average   |
+| ------------ | ----- | ----- | ----- | --------- |
+| **Baseline** | 32.26 | 29.60 | 25.62 | **29.16** |
+| DSC_Epoch5   | 31.35 | 28.98 | 26.01 | 28.78     |
+| DSC_Epoch10  | 31.64 | 29.23 | 26.19 | 29.02     |
+| DSC_Epoch15  | 31.70 | 29.29 | 26.26 | 29.08     |
+| DSC_Epoch20  | 31.74 | 29.33 | 26.29 | 29.12     |
+| **DSC_Best** | 31.61 | 29.20 | 26.18 | **29.00** |
+
+**Key Findings:**
+
+- The DSC version of the denoiser achieves less PNSR score (with the average being -0.16 dB PSNR reduction in this evaluation). This is expected considering the reduction of parameters (which in turn causes less inference time), which causes this reduction to be insignificant and can be considered as a worthwile trade-off.
+- With a high noise input (specifically at level σ=50), the DSC version appears to be winning in terms of PSNR score in every epoch checkpoint. This interesting finding may be caused by the reduction of parameters, which in turn reduces the risk of overfitting and acting as a regularization step. These conditions caused the DSC model to produce a smoother reconstruction of high-noise images.
+
+### Controlled Cross-Field Feedback Modification (by Satrio Adi Rinekso)
+
+Total Parameters: 16,390,404
+
+Inference Speed: 946.49 ms ms Tested on CPU
+
+| Model                 | σ=15  | σ=25  | σ=50  | Average |
+| --------------------- | ----- | ----- | ----- | ------- |
+| Baseline              | 15.03 | 14.35 | 12.35 | 13.87   |
+| Controled Cross-Field | 23.46 | 23.43 | 16.39 | 21.09   |
+
+**Key Finding:** The Controlled Cross-Field Feedback mechanism implements a dual-task architecture that simultaneously performs image denoising and colorization, a far more complex challenge than the single-task methods used in other modifications. By utilizing semantic information from the colorization task to guide the denoising process, the model achieves a significant average improvement of 21.09 dB (+7.22 dB gain) over the baseline.
+
+### Attention Gates Modification (by Juan Matthew Davidson)
+
+- Base Params : 32,638,656
+- Attention Params : 32,990,188
+- Param Change : +1.08%
+
 ---
+
+- Base Inference : 91.16 ms
+- Att. Inference : 96.06 ms
+- Time Change : +5.37%
+
+| Model               | σ=15      | σ=25      | σ=50      | σ=75      | Average   |
+| ------------------- | --------- | --------- | --------- | --------- | --------- |
+| Baseline (DRUNet)   | 33.93     | 31.41     | 27.01     | 23.52     | 28.97     |
+| **Attention Gates** | **34.03** | **31.93** | **29.51** | **28.18** | **30.91** |
+
+**Key Findings:**
+
+- **Massive Gain with Minimal Cost:** The model achieves a stunning **+4.66 dB improvement at σ=75** with only a **1.08% increase in parameters** and **5.37% increase in inference time**. This proves that the performance boost comes from a smarter feature selection mechanism (Attention), not merely from adding raw capacity.
+- **Superior Noise Robustness:** The Attention Gates mechanism excels in separating signal from noise in highly corrupted images. While standard convolution struggles to differentiate heavy noise from texture, the attention maps successfully suppress the background noise, preserving clarity where it matters most.
+- **Highest Efficiency:** Compared to other modifications that require heavy computational trade-offs, this architecture offers the best balance: state-of-the-art restoration quality with negligible impact on model size and speed.
 
 ## 🏗️ Architecture
 
@@ -77,11 +143,11 @@ python app.py
 
 ### Modifications Being Studied
 
-1. **Residual Blocks** - Improve gradient flow
+1. **Residual Blocks** ✅ - Improve gradient flow
 2. **Attention Gates** - Focus on relevant regions
-3. **Cross-Feedback** - Share features between denoiser/colorizer
+3. **Cross-Feedback** ✅ - Share features between denoiser/colorizer
 4. **Feature Pyramid Network (FPN)** ✅ - Multi-scale feature fusion
-5. **Depthwise Separable Conv** - Reduce parameters
+5. **Depthwise Separable Conv** ✅ - Reduce parameters
 
 ---
 
