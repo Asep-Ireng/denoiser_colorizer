@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+
+# Virtual Environment
+Lib/
+Scripts/
+pyvenv.cfg
+venv/
+.venv/
+
+# Datasets (too large for git)
+data/
+data_filtered/
+data_filtered.rar
+*.rar
+*.zip
+
+# Model Weights (stored on HuggingFace)
+weights/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Outputs (optional - can be regenerated)
+evaluation_results/
